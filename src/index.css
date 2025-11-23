@@ -1,0 +1,736 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Retro Pixel Theme Global Styles */
+* {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+body {
+  font-family: 'Press Start 2P', monospace;
+  background: #000000;
+  color: #ffffff;
+  overflow-x: hidden;
+}
+
+/* Pixel Grid Background */
+.pixel-bg {
+  background-image: 
+    radial-gradient(circle at 1px 1px, rgba(0, 234, 255, 0.15) 1px, transparent 0);
+  background-size: 20px 20px;
+}
+
+/* Retro Button Styles */
+.retro-btn {
+  font-family: 'Press Start 2P', monospace;
+  border: 3px solid #ffffff;
+  box-shadow: 4px 4px 0px #000000;
+  transition: all 0.1s ease;
+  text-transform: uppercase;
+  font-size: 12px;
+  padding: 12px 16px;
+}
+
+.retro-btn:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px #000000;
+}
+
+.retro-btn-red {
+  background: #ff004d;
+  color: #ffffff;
+}
+
+.retro-btn-red:hover {
+  background: #00eaff;
+  color: #000000;
+  border-color: #ffcc00;
+}
+
+.retro-btn-cyan {
+  background: #00eaff;
+  color: #000000;
+}
+
+.retro-btn-cyan:hover {
+  background: #ff00aa;
+  color: #ffffff;
+  border-color: #ffcc00;
+}
+
+.retro-btn-green {
+  background: #00ff00;
+  color: #000000;
+}
+
+.retro-btn-green:hover {
+  background: #ffcc00;
+  color: #000000;
+  border-color: #ff004d;
+}
+
+/* Arcade Dialog Box */
+.arcade-dialog {
+  background: linear-gradient(135deg, #0d0d0d 0%, #1a1a1a 100%);
+  border: 4px solid #00fff7;
+  box-shadow: 0 0 20px #00fff7, 0 0 40px rgba(0, 255, 247, 0.3);
+  font-family: 'Press Start 2P', monospace;
+  color: #FFFFFF;
+}
+
+/* Arcade Card */
+.arcade-card {
+  background: linear-gradient(135deg, #0a0a0a 0%, #0d0d0d 100%);
+  border: 3px solid #00fff7;
+  box-shadow: 0 0 15px #00fff7, 0 0 30px rgba(0, 255, 247, 0.2);
+  font-family: 'Press Start 2P', monospace;
+  transition: all 0.3s ease;
+}
+
+.arcade-card:hover {
+  box-shadow: 0 0 25px #ff00ff, 0 0 50px rgba(255, 0, 255, 0.3);
+  border-color: #ff00ff;
+}
+
+/* Retro Dialog Box */
+.retro-dialog {
+  background: #222222;
+  border: 4px solid #ffffff;
+  box-shadow: 6px 6px 0px #000000;
+  font-family: 'Press Start 2P', monospace;
+  color: #ffcc00;
+}
+
+/* Retro Card */
+.retro-card {
+  background: #000000;
+  border: 3px solid #00eaff;
+  box-shadow: 4px 4px 0px #222222;
+  font-family: 'Press Start 2P', monospace;
+}
+
+.retro-card-red {
+  border-color: #ff004d;
+}
+
+.retro-card-magenta {
+  border-color: #ff00aa;
+}
+
+.retro-card-green {
+  border-color: #00ff00;
+}
+
+.arcade-card-cyan {
+  border-color: #00fff7;
+  box-shadow: 0 0 15px #00fff7, 0 0 30px rgba(0, 255, 247, 0.2);
+}
+
+.arcade-card-magenta {
+  border-color: #ff00ff;
+  box-shadow: 0 0 15px #ff00ff, 0 0 30px rgba(255, 0, 255, 0.2);
+}
+
+.arcade-card-green {
+  border-color: #39ff14;
+  box-shadow: 0 0 15px #39ff14, 0 0 30px rgba(57, 255, 20, 0.2);
+}
+
+.arcade-card-yellow {
+  border-color: #ffe600;
+  box-shadow: 0 0 15px #ffe600, 0 0 30px rgba(255, 230, 0, 0.2);
+}
+
+/* Quiz Option Styles */
+.quiz-option {
+  background: linear-gradient(135deg, #0a0a0a 0%, #0d0d0d 100%);
+  border: 3px solid #ffffff;
+  color: #ffffff;
+  transition: all 0.3s ease;
+}
+
+.quiz-option:hover {
+  border-color: #ff00ff;
+  box-shadow: 0 0 20px #ff00ff, 0 0 40px rgba(255, 0, 255, 0.3);
+  background: rgba(255, 0, 255, 0.1);
+}
+
+.quiz-option.selected {
+  background: rgba(0, 255, 247, 0.15);
+  border-color: #00fff7;
+  box-shadow: 0 0 25px #00fff7;
+}
+
+/* Arcade Text Colors */
+.arcade-text-neon-cyan {
+  color: #00fff7;
+  text-shadow: 0 0 10px #00fff7;
+}
+
+.arcade-text-neon-yellow {
+  color: #ffe600;
+  text-shadow: 0 0 10px #ffe600;
+}
+
+.arcade-text-neon-green {
+  color: #39ff14;
+  text-shadow: 0 0 10px #39ff14;
+}
+
+.arcade-text-neon-pink {
+  color: #ff00ff;
+  text-shadow: 0 0 10px #ff00ff;
+}
+
+.arcade-text-neon-red {
+  color: #ff3131;
+  text-shadow: 0 0 10px #ff3131;
+}
+
+/* Listen Button */
+.listen-btn {
+  background: #0a0a0a;
+  border: 3px solid #00fff7;
+  box-shadow: 0 0 15px #00fff7;
+  color: #ffe600;
+  transition: all 0.3s ease;
+}
+
+.listen-btn:hover {
+  border-color: #ff00ff;
+  box-shadow: 0 0 20px #ff00ff;
+}
+
+.listen-btn:active {
+  background: rgba(57, 255, 20, 0.2);
+}
+
+/* Enhanced Arcade Buttons */
+.arcade-btn-quiz {
+  background: #0a0a0a;
+  border: 3px solid #ff00ff;
+  box-shadow: 0 0 15px #ff00ff;
+  color: #ffffff;
+  font-family: 'Press Start 2P', monospace;
+  transition: all 0.3s ease;
+}
+
+.arcade-btn-mission {
+  background: #0a0a0a;
+  border: 3px solid #39ff14;
+  box-shadow: 0 0 15px #39ff14;
+  color: #ffffff;
+  font-family: 'Press Start 2P', monospace;
+  transition: all 0.3s ease;
+}
+
+.arcade-btn-status {
+  background: #0a0a0a;
+  border: 3px solid #00fff7;
+  box-shadow: 0 0 15px #00fff7;
+  color: #ffffff;
+  font-family: 'Press Start 2P', monospace;
+  transition: all 0.3s ease;
+}
+
+.arcade-btn:hover {
+  animation: borderCycle 1s infinite;
+}
+
+@keyframes borderCycle {
+  0% { border-color: #00fff7; box-shadow: 0 0 20px #00fff7, 0 0 40px rgba(0, 255, 247, 0.3); }
+  25% { border-color: #ff00ff; box-shadow: 0 0 20px #ff00ff, 0 0 40px rgba(255, 0, 255, 0.3); }
+  50% { border-color: #39ff14; box-shadow: 0 0 20px #39ff14, 0 0 40px rgba(57, 255, 20, 0.3); }
+  75% { border-color: #ffe600; box-shadow: 0 0 20px #ffe600, 0 0 40px rgba(255, 230, 0, 0.3); }
+  100% { border-color: #00fff7; box-shadow: 0 0 20px #00fff7, 0 0 40px rgba(0, 255, 247, 0.3); }
+}
+
+/* Badge Hover Effects */
+.earned:hover {
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
+}
+
+/* Global Border Animation */
+.arcade-dialog,
+.arcade-card,
+.retro-dialog,
+.retro-card,
+.quiz-review-container,
+.mission-result,
+.eco-mission-card,
+.arcade-btn,
+.arcade-btn-quiz,
+.arcade-btn-mission,
+.arcade-btn-status,
+.retro-btn {
+  animation: borderCycle 3s infinite;
+}
+
+/* Quiz Review Containers */
+.quiz-review-container {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  border: 3px solid #00fff7;
+  animation: borderCycle 2s infinite;
+  box-shadow: 0 0 30px rgba(0, 255, 247, 0.4);
+}
+
+/* Mission Result Animated */
+.mission-result {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  border: 4px solid #00fff7;
+  animation: borderCycle 2s infinite;
+  box-shadow: 0 0 40px rgba(0, 255, 247, 0.5);
+}
+
+/* Eco Mission Cards */
+.eco-mission-card {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  border: 3px solid #00fff7;
+  box-shadow: 0 0 20px rgba(0, 255, 247, 0.3);
+  transition: all 0.3s ease;
+}
+
+.eco-mission-card.active {
+  border-color: #39ff14;
+  box-shadow: 0 0 25px rgba(57, 255, 20, 0.4);
+  animation: borderCycle 3s infinite;
+}
+
+.eco-mission-card.locked {
+  border-color: #ff3131;
+  box-shadow: 0 0 15px rgba(255, 49, 49, 0.3);
+}
+
+/* Badge Cards */
+.badge-card {
+  background: linear-gradient(135deg, #111111 0%, #222222 100%);
+  border: 3px solid #00eaff;
+  box-shadow: 0 0 15px rgba(0, 234, 255, 0.4), 4px 4px 0px #000000;
+  transition: all 0.3s ease;
+}
+
+.badge-card.earned {
+  border-color: #00ff00;
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.5), 4px 4px 0px #000000;
+  animation: borderCycle 3s infinite;
+}
+
+.badge-card.locked {
+  border-color: #666666;
+  box-shadow: 0 0 10px rgba(102, 102, 102, 0.3), 4px 4px 0px #000000;
+  opacity: 0.6;
+}
+
+/* Certificate Styles */
+.certificate {
+  background: linear-gradient(135deg, #000000 0%, #111111 100%);
+  border: 6px solid #00eaff;
+  box-shadow: 0 0 30px rgba(0, 234, 255, 0.6), 8px 8px 0px #ff004d;
+  position: relative;
+}
+
+.certificate::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  border: 3px solid #ff004d;
+  z-index: -1;
+}
+
+.certificate-title {
+  color: #00eaff;
+  text-shadow: 3px 3px 0px #ff004d;
+  font-family: 'Press Start 2P', monospace;
+}
+
+.certificate-seal {
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(circle, #ffcc00 0%, #ff004d 100%);
+  border: 4px solid #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* Mission Status Badges */
+.status-complete {
+  background: #0a0a0a;
+  border: 2px solid #39ff14;
+  box-shadow: 0 0 10px #39ff14;
+  color: #39ff14;
+}
+
+.status-incomplete {
+  background: #0a0a0a;
+  border: 2px solid #ff3131;
+  box-shadow: 0 0 10px #ff3131;
+  color: #ff3131;
+}
+
+/* Result Boxes */
+.result-success {
+  background: linear-gradient(135deg, #0a0a0a 0%, #0d0d0d 100%);
+  border: 4px solid;
+  border-image: linear-gradient(45deg, #39ff14, #00fff7) 1;
+  box-shadow: 0 0 30px rgba(57, 255, 20, 0.5);
+}
+
+.result-failure {
+  background: linear-gradient(135deg, #0a0a0a 0%, #0d0d0d 100%);
+  border: 4px solid;
+  border-image: linear-gradient(45deg, #ff3131, #ff8800) 1;
+  box-shadow: 0 0 30px rgba(255, 49, 49, 0.5);
+}
+
+/* Color utilities */
+.text-cyan-400 {
+  color: #00eaff !important;
+}
+
+.text-magenta-400 {
+  color: #ff00aa !important;
+}
+
+.text-yellow-400 {
+  color: #ffcc00 !important;
+}
+
+.text-green-400 {
+  color: #00ff00 !important;
+}
+
+.text-red-400 {
+  color: #ff004d !important;
+}
+
+.bg-cyan-400 {
+  background-color: #00eaff !important;
+}
+
+.bg-magenta-400 {
+  background-color: #ff00aa !important;
+}
+
+.bg-yellow-400 {
+  background-color: #ffcc00 !important;
+}
+
+.bg-green-400 {
+  background-color: #00ff00 !important;
+}
+
+.bg-red-400 {
+  background-color: #ff004d !important;
+}
+
+/* Retro Input */
+.retro-input {
+  background: #000000;
+  border: 2px solid #00eaff;
+  color: #ffffff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  padding: 8px;
+}
+
+.retro-input:focus {
+  border-color: #ff00aa;
+  outline: none;
+  box-shadow: 0 0 10px #ff00aa;
+}
+
+.retro-input::placeholder {
+  color: #aaaaaa;
+}
+
+/* Retro Text Styles */
+.retro-h1 {
+  font-family: 'Press Start 2P', monospace;
+  color: #00eaff;
+  text-shadow: 2px 2px 0px #ff004d;
+  font-size: 24px;
+  line-height: 1.4;
+}
+
+.retro-h2 {
+  font-family: 'Press Start 2P', monospace;
+  color: #ff00aa;
+  text-shadow: 2px 2px 0px #ffcc00;
+  font-size: 18px;
+  line-height: 1.4;
+}
+
+.retro-h3 {
+  font-family: 'Press Start 2P', monospace;
+  color: #ffffff;
+  text-shadow: 1px 1px 0px #00eaff;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.retro-text {
+  font-family: 'Press Start 2P', monospace;
+  color: #ffffff;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.retro-text-yellow {
+  color: #ffcc00;
+}
+
+.retro-text-cyan {
+  color: #00eaff;
+}
+
+.retro-text-magenta {
+  color: #ff00aa;
+}
+
+.retro-text-green {
+  color: #00ff00;
+}
+
+/* Blinking Cursor Effect */
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.blink {
+  animation: blink 1s infinite;
+}
+
+/* Navbar Hover Effect */
+.nav-hover:hover::after {
+  content: '_';
+  animation: blink 1s infinite;
+  color: #ffcc00;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #00eaff;
+  border: 2px solid #000000;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ff00aa;
+}
+
+/* Enhanced Arcade Styles */
+.arcade-h1 {
+  font-family: 'Press Start 2P', monospace;
+  color: #00eaff;
+  text-shadow: 3px 3px 0px #ff004d;
+  font-size: 28px;
+  line-height: 1.4;
+}
+
+.arcade-h2 {
+  font-family: 'Press Start 2P', monospace;
+  color: #ff00aa;
+  text-shadow: 2px 2px 0px #ffcc00;
+  font-size: 20px;
+  line-height: 1.4;
+}
+
+.arcade-h3 {
+  font-family: 'Press Start 2P', monospace;
+  color: #ffffff;
+  text-shadow: 1px 1px 0px #00eaff;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.arcade-input {
+  background: #000000;
+  border: 3px solid #00eaff;
+  color: #ffffff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  padding: 8px;
+  transition: all 0.3s ease;
+}
+
+.arcade-input:focus {
+  border-color: #ff00aa;
+  outline: none;
+  box-shadow: 0 0 15px #ff00aa;
+}
+
+.arcade-input::placeholder {
+  color: #aaaaaa;
+}
+
+.arcade-btn-secondary {
+  background: #0a0a0a;
+  border: 3px solid #ffffff;
+  box-shadow: 0 0 10px #ffffff;
+  color: #ffffff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  padding: 8px 12px;
+  transition: all 0.3s ease;
+}
+
+.arcade-btn-secondary:hover {
+  border-color: #00fff7;
+  box-shadow: 0 0 15px #00fff7;
+}
+
+.arcade-btn {
+  background: #0a0a0a;
+  border: 3px solid #00fff7;
+  box-shadow: 0 0 10px #00fff7;
+  color: #ffffff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  padding: 8px 12px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.arcade-btn:hover {
+  border-color: #ff00ff;
+  box-shadow: 0 0 15px #ff00ff;
+  transform: scale(1.05);
+}
+
+.arcade-btn-primary {
+  background: #0a0a0a;
+  border: 3px solid #39ff14;
+  box-shadow: 0 0 10px #39ff14;
+  color: #ffffff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  padding: 8px 12px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.arcade-btn-primary:hover {
+  border-color: #00fff7;
+  box-shadow: 0 0 15px #00fff7;
+  background: rgba(57, 255, 20, 0.1);
+}
+
+.arcade-btn-red {
+  background: #0a0a0a;
+  border: 3px solid #ff3131;
+  box-shadow: 0 0 10px #ff3131;
+  color: #ffffff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  padding: 8px 12px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.arcade-btn-red:hover {
+  border-color: #ff00ff;
+  box-shadow: 0 0 15px #ff00ff;
+  background: rgba(255, 49, 49, 0.1);
+}
+
+.arcade-text {
+  font-family: 'Press Start 2P', monospace;
+  color: #ffffff;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.arcade-text-cyan {
+  color: #00fff7;
+}
+
+.arcade-text-yellow {
+  color: #ffe600;
+}
+
+.arcade-text-red {
+  color: #ff3131;
+}
+
+.text-brown {
+  color: #8B4513;
+}
+
+.text-violet {
+  color: #8A2BE2;
+}
+
+.text-dark-red {
+  color: #8B0000;
+}
+
+.text-dark-violet {
+  color: #4B0082;
+}
+
+/* Glow Effects */
+.glow {
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 20px currentColor;
+  }
+  to {
+    box-shadow: 0 0 30px currentColor, 0 0 40px currentColor;
+  }
+}
+
+/* Flash Effect */
+.flash {
+  animation: flash 1s ease-in-out infinite;
+}
+
+@keyframes flash {
+  0%, 100% {
+    background-color: rgba(0, 255, 247, 0.1);
+  }
+  50% {
+    background-color: rgba(255, 0, 255, 0.2);
+  }
+}
+
+/* Border Width Utilities */
+.border-3 {
+  border-width: 3px;
+}
+
+.border-4 {
+  border-width: 4px;
+}
+
+.border-6 {
+  border-width: 6px;
+}
