@@ -30,10 +30,10 @@ interface Cloud {
 
 export default function EcoGames() {
   const { user } = useAuth();
-  const { updatePoints } = useGame();
+  // const { updatePoints } = useGame(); // Commented out since GameContext is removed
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const [currentGame, setCurrentGame] = useState<'menu' | 'trash-sorter' | 'rainwater-hero'>('menu');
+  const [currentGame, setCurrentGame] = useState<'menu' | 'trash-sorter' | 'rainwater-hero' | 'jumble-quest' | 'word-builder'>('menu');
   const [gameState, setGameState] = useState<'menu' | 'playing' | 'paused' | 'ended'>('menu');
   const [selectedCategory, setSelectedCategory] = useState<string>('organic');
   const [score, setScore] = useState(0);
@@ -66,6 +66,120 @@ export default function EcoGames() {
   };
 
   const [gameTime, setGameTime] = useState(90);
+
+  // Word Games State
+  const [currentWord, setCurrentWord] = useState('');
+  const [scrambledWord, setScrambledWord] = useState('');
+  const [userAnswer, setUserAnswer] = useState('');
+  const [wordMeaning, setWordMeaning] = useState('');
+  const [showResult, setShowResult] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(false);
+  const [wordScore, setWordScore] = useState(0);
+  const [wordLevel, setWordLevel] = useState(1);
+  const [missingLetters, setMissingLetters] = useState<{word: string, display: string}>({word: '', display: ''});
+
+  const ecoWords = [
+    { word: 'CLIMATE', meaning: 'Long-term weather pattern of a region.' },
+    { word: 'RECYCLE', meaning: 'Turning waste into reusable material.' },
+    { word: 'ECOSYSTEM', meaning: 'Living things interacting with their environment.' },
+    { word: 'BIODIVERSITY', meaning: 'Variety of plant and animal life.' },
+    { word: 'POLLUTION', meaning: 'Harmful substances released into nature.' },
+    { word: 'CONSERVE', meaning: 'Protect and save resources.' },
+    { word: 'HABITAT', meaning: 'Natural home of an animal or plant.' },
+    { word: 'RENEWABLE', meaning: 'A resource that can be naturally replaced.' },
+    { word: 'ORGANIC', meaning: 'Food grown without chemicals.' },
+    { word: 'COMPOST', meaning: 'Natural fertilizer from decomposed waste.' },
+    { word: 'SUSTAINABLE', meaning: 'Using resources responsibly for the future.' },
+    { word: 'GREENHOUSE', meaning: 'A structure that traps heat; also heat-trapping gases.' },
+    { word: 'DEFORESTATION', meaning: 'Cutting down forests.' },
+    { word: 'EMISSION', meaning: 'Release of gas or pollution into the air.' },
+    { word: 'CARBON', meaning: 'Element found in fuels and greenhouse gases.' },
+    { word: 'OXYGEN', meaning: 'Gas essential for breathing.' },
+    { word: 'NATURE', meaning: 'The natural world: plants, animals, land, water.' },
+    { word: 'WILDLIFE', meaning: 'Animals living freely in nature.' },
+    { word: 'EARTHQUAKE', meaning: 'Shaking of Earth surface.' },
+    { word: 'WETLANDS', meaning: 'Land areas covered by water, rich in life.' },
+    { word: 'SOLAR', meaning: 'Energy from the sun.' },
+    { word: 'WINDMILL', meaning: 'Machine that creates energy using wind.' },
+    { word: 'GLACIERS', meaning: 'Large moving masses of ice.' },
+    { word: 'PURIFY', meaning: 'Remove impurities to make clean.' },
+    { word: 'ATMOSPHERE', meaning: 'The layer of gases surrounding Earth.' },
+    { word: 'HYDRATION', meaning: 'Supplying water to living things.' },
+    { word: 'CLIMATE-ACTION', meaning: 'Steps taken to fight climate change.' },
+    { word: 'REFORESTATION', meaning: 'Planting trees in deforested areas.' },
+    { word: 'AFFORESTATION', meaning: 'Growing forests in new areas.' },
+    { word: 'SUSTAINABILITY', meaning: 'Protecting nature while meeting human needs.' },
+    { word: 'CONSERVATION', meaning: 'Saving and protecting natural resources.' },
+    { word: 'FOSSIL-FUELS', meaning: 'Coal, oil, gas formed from ancient remains.' },
+    { word: 'RENEWABLE-ENERGY', meaning: 'Energy sources that do not run out.' },
+    { word: 'NON-RENEWABLE', meaning: 'Resources that cannot be replaced quickly.' },
+    { word: 'BIODEGRADABLE', meaning: 'Can break down naturally.' },
+    { word: 'COMPOSTABLE', meaning: 'Can break down into natural fertilizer.' },
+    { word: 'ECO-FRIENDLY', meaning: 'Not harmful to the environment.' },
+    { word: 'SUSTAINABILITY-GOALS', meaning: 'Targets to protect the planet.' },
+    { word: 'CLIMATE-CRISIS', meaning: 'Extreme climate emergency.' },
+    { word: 'MELTING', meaning: 'Ice turning into water due to heat.' },
+    { word: 'RECYCLING-BIN', meaning: 'Container for recyclable waste.' },
+    { word: 'GREEN-ENERGY', meaning: 'Clean and non-polluting energy.' },
+    { word: 'WATER-SCARCITY', meaning: 'Not enough clean water available.' },
+    { word: 'AIR-QUALITY', meaning: 'How clean or polluted the air is.' },
+    { word: 'ZERO-WASTE', meaning: 'Using resources without creating waste.' },
+    { word: 'UPCYCLE', meaning: 'Convert waste into a better new product.' },
+    { word: 'CARBON-FOOTPRINT', meaning: 'Total greenhouse gases a person releases.' },
+    { word: 'EARTH-DAY', meaning: 'Global day dedicated to environmental protection.' },
+    { word: 'WILDLIFE-PROTECTION', meaning: 'Saving animals and their habitats.' },
+    { word: 'OVERFISHING', meaning: 'Catching too many fish from oceans.' },
+    { word: 'MARINE-LIFE', meaning: 'Plants and animals living in oceans.' },
+    { word: 'CORAL-REEF', meaning: 'Underwater structures made by corals.' },
+    { word: 'OZONE-LAYER', meaning: 'Atmosphere layer that protects from UV rays.' },
+    { word: 'UV-RADIATION', meaning: 'Harmful rays from the sun.' },
+    { word: 'GREEN-REVOLUTION', meaning: 'Increase in farming using modern methods.' },
+    { word: 'AGRI-WASTE', meaning: 'Waste produced from agriculture.' },
+    { word: 'BIOGAS', meaning: 'Gas produced from organic waste.' },
+    { word: 'RAINWATER-HARVESTING', meaning: 'Collecting and storing rainwater.' },
+    { word: 'GROUNDWATER', meaning: 'Water stored under Earth surface.' },
+    { word: 'OVERCONSUMPTION', meaning: 'Using too many resources.' },
+    { word: 'DROUGHT', meaning: 'Long period with no rain.' },
+    { word: 'FLOOD', meaning: 'Overflow of water on land.' },
+    { word: 'CYCLONE', meaning: 'Strong, rotating storm.' },
+    { word: 'EROSION', meaning: 'Wearing away of land by wind or water.' },
+    { word: 'PLANTATION', meaning: 'Large area of planted trees or crops.' },
+    { word: 'EARTH-RESOURCES', meaning: 'Natural materials like water, soil, minerals.' },
+    { word: 'WILDLIFE-SANCTUARY', meaning: 'Protected area for animals.' },
+    { word: 'NATIONAL-PARK', meaning: 'Reserved natural area protected by government.' },
+    { word: 'ORGANIC-FARMING', meaning: 'Farming without chemical pesticides.' },
+    { word: 'FERTILITY', meaning: 'Ability of soil to support plant growth.' },
+    { word: 'OXYGEN-CYCLE', meaning: 'Process of oxygen moving through Earth.' },
+    { word: 'WATER-CYCLE', meaning: 'Natural movement of water on Earth.' },
+    { word: 'CARBON-CYCLE', meaning: 'Circulation of carbon through nature.' },
+    { word: 'FOSSILIZATION', meaning: 'Process of forming fossils.' },
+    { word: 'MICROPLASTICS', meaning: 'Tiny pieces of plastic harmful to life.' },
+    { word: 'LANDFILL', meaning: 'Area where waste is buried.' },
+    { word: 'WASTE-SEGREGATION', meaning: 'Separating waste into categories.' },
+    { word: 'ECOTOURISM', meaning: 'Responsible travel to natural places.' },
+    { word: 'SUSTAINABLE-LIVING', meaning: 'Lifestyle with minimal environmental impact.' },
+    { word: 'NATURAL-RESOURCES', meaning: 'Water, wood, minerals, soil.' },
+    { word: 'WIND-ENERGY', meaning: 'Energy from moving air.' },
+    { word: 'SOLAR-PANEL', meaning: 'Device that converts sunlight to electricity.' },
+    { word: 'CARBON-NEUTRAL', meaning: 'Not increasing carbon emissions.' },
+    { word: 'PLASTIC-BAN', meaning: 'Restriction on using plastic products.' },
+    { word: 'ECO-SYSTEM-BALANCE', meaning: 'When all living things live in harmony.' },
+    { word: 'EARTH-PROTECTION', meaning: 'Actions taken to save our planet.' },
+    { word: 'WILDLIFE-EXTINCTION', meaning: 'Species dying out completely.' },
+    { word: 'GREEN-FUTURE', meaning: 'A world with clean and safe environment.' },
+    { word: 'SOIL-POLLUTION', meaning: 'Harmful chemicals entering soil.' },
+    { word: 'WATER-POLLUTION', meaning: 'Harmful substances in water.' },
+    { word: 'AIR-POLLUTION', meaning: 'Contamination of air with harmful gases.' },
+    { word: 'CONTAMINATION', meaning: 'Making something dirty or unsafe.' },
+    { word: 'SUSTAINABLE-TECH', meaning: 'Technology that reduces environmental impact.' },
+    { word: 'ECO-EDUCATION', meaning: 'Learning about protecting nature.' },
+    { word: 'NATURE-CARE', meaning: 'Activities that support environment.' },
+    { word: 'ECO-WARRIOR', meaning: 'A person who fights for the environment.' },
+    { word: 'CLEAN-ENERGY', meaning: 'Energy that does not pollute.' },
+    { word: 'MARINE-POLLUTION', meaning: 'Pollution that harms oceans and sea life.' },
+    { word: 'WILDLIFE-HABITATS', meaning: 'Natural places where animals live.' },
+    { word: 'GLOBAL-WARMING', meaning: 'Increase in Earth temperature due to pollution.' }
+  ];
 
 
   const categories = {
@@ -240,9 +354,7 @@ export default function EcoGames() {
 
   const endGame = () => {
     setGameState('ended');
-    if (score > 0) {
-      updatePoints(Math.floor(score / 10)); // Convert game score to app points
-    }
+    // Points update removed since GameContext is disabled
   };
 
   const resetGame = () => {
@@ -433,7 +545,7 @@ export default function EcoGames() {
       {/* Game Selection Menu */}
       {currentGame === 'menu' && (
         <div className="max-w-4xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {/* Trash Sorter Game */}
             <div className="arcade-dialog p-6 text-center">
               <Gamepad2 className="w-16 h-16 text-cyan-400 mx-auto mb-4" />
@@ -479,6 +591,54 @@ export default function EcoGames() {
               </div>
               <button 
                 onClick={startRainCollectionGame} 
+                className="arcade-btn arcade-btn-primary px-6"
+              >
+                <Play className="w-4 h-4 inline mr-2" />PLAY NOW
+              </button>
+            </div>
+
+            {/* Eco Jumble Quest */}
+            <div className="arcade-dialog p-6 text-center">
+              <div className="text-6xl mb-4">🔤</div>
+              <h2 className="arcade-h2 mb-4">ECO JUMBLE QUEST</h2>
+              <p className="arcade-text arcade-text-cyan text-sm mb-4">
+                In this game, the letters of a sustainability-related word will appear in jumbled order. Your task is to rearrange the letters and type the correct word.
+              </p>
+              <div className="arcade-card p-3 mb-4">
+                <div className="arcade-text arcade-text-green text-xs mb-2">HOW TO PLAY:</div>
+                <div className="arcade-text text-xs text-left">
+                  • Unscramble eco-friendly words<br/>
+                  • Type your answer<br/>
+                  • Learn word meanings<br/>
+                  • Score points for correct answers
+                </div>
+              </div>
+              <button 
+                onClick={() => setCurrentGame('jumble-quest')} 
+                className="arcade-btn arcade-btn-primary px-6"
+              >
+                <Play className="w-4 h-4 inline mr-2" />PLAY NOW
+              </button>
+            </div>
+
+            {/* Green Word Builder */}
+            <div className="arcade-dialog p-6 text-center">
+              <div className="text-6xl mb-4">🌱</div>
+              <h2 className="arcade-h2 mb-4">GREEN WORD BUILDER</h2>
+              <p className="arcade-text arcade-text-cyan text-sm mb-4">
+                In this game, you will see a sustainability word with some missing letters. You must fill the blanks and type the full correct word.
+              </p>
+              <div className="arcade-card p-3 mb-4">
+                <div className="arcade-text arcade-text-green text-xs mb-2">HOW TO PLAY:</div>
+                <div className="arcade-text text-xs text-left">
+                  • Fill in missing letters<br/>
+                  • Complete eco-friendly words<br/>
+                  • Learn word meanings<br/>
+                  • Score points for correct answers
+                </div>
+              </div>
+              <button 
+                onClick={() => setCurrentGame('word-builder')} 
                 className="arcade-btn arcade-btn-primary px-6"
               >
                 <Play className="w-4 h-4 inline mr-2" />PLAY NOW
@@ -666,11 +826,7 @@ export default function EcoGames() {
                   </div>
                 </div>
                 
-                {score > 0 && (
-                  <div className="arcade-text arcade-text-green text-sm mt-4">
-                    +{Math.floor(score / 10)} POINTS EARNED!
-                  </div>
-                )}
+
               </div>
 
               <div className="flex space-x-4 justify-center">
@@ -856,11 +1012,7 @@ export default function EcoGames() {
           <div className="arcade-card p-6 mb-6">
             <div className="arcade-text arcade-text-cyan text-lg mb-2">FINAL SCORE</div>
             <div className="arcade-h1 arcade-text-yellow mb-4">{score}</div>
-            {score > 0 && (
-              <div className="arcade-text arcade-text-green text-sm">
-                +{Math.floor(score / 10)} POINTS EARNED!
-              </div>
-            )}
+
           </div>
 
           <div className="flex space-x-4 justify-center">
@@ -901,6 +1053,271 @@ export default function EcoGames() {
           )}
         </div>
       )}
+
+      {/* Eco Jumble Quest Game */}
+      {currentGame === 'jumble-quest' && (
+        <div className="max-w-2xl mx-auto">
+          {gameState === 'menu' && (
+            <div className="arcade-dialog p-8 text-center">
+              <div className="text-8xl mb-4">🔤</div>
+              <h2 className="arcade-h2 mb-4">ECO JUMBLE QUEST</h2>
+              <p className="arcade-text arcade-text-cyan text-sm mb-6">
+                Unscramble sustainability-related words and learn their meanings!
+              </p>
+              <button 
+                onClick={() => {
+                  setGameState('playing');
+                  setWordScore(0);
+                  setWordLevel(1);
+                  generateJumbledWord();
+                }} 
+                className="arcade-btn arcade-btn-primary px-8"
+              >
+                <Play className="w-4 h-4 inline mr-2" />START GAME
+              </button>
+            </div>
+          )}
+
+          {gameState === 'playing' && (
+            <div className="arcade-dialog p-8">
+              <div className="text-center mb-6">
+                <div className="arcade-text arcade-text-yellow text-sm mb-2">LEVEL {wordLevel} • SCORE: {wordScore}</div>
+                <h3 className="arcade-h2 mb-4">UNSCRAMBLE THIS WORD:</h3>
+                <div className="arcade-card p-6 mb-6">
+                  <div className="text-4xl arcade-text arcade-text-cyan tracking-widest">
+                    {scrambledWord}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <input
+                  type="text"
+                  value={userAnswer}
+                  onChange={(e) => setUserAnswer(e.target.value.toUpperCase())}
+                  className="arcade-input w-full px-4 py-3 text-center text-xl"
+                  placeholder="TYPE YOUR ANSWER HERE"
+                  onKeyPress={(e) => e.key === 'Enter' && checkJumbleAnswer()}
+                  autoFocus
+                />
+              </div>
+
+              <div className="flex space-x-4 justify-center">
+                <button 
+                  onClick={checkJumbleAnswer}
+                  className="arcade-btn arcade-btn-primary px-6"
+                >
+                  SUBMIT ANSWER
+                </button>
+                <button 
+                  onClick={generateJumbledWord}
+                  className="arcade-btn arcade-btn-secondary px-6"
+                >
+                  SKIP WORD
+                </button>
+                <button 
+                  onClick={() => { setCurrentGame('menu'); setGameState('menu'); }}
+                  className="arcade-btn arcade-btn-red px-6"
+                >
+                  QUIT
+                </button>
+              </div>
+            </div>
+          )}
+
+          {showResult && (
+            <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+              <div className="arcade-dialog p-8 max-w-md w-full mx-4 text-center">
+                <div className={`text-6xl mb-4 ${isCorrect ? 'text-green-400' : 'text-red-400'}`}>
+                  {isCorrect ? '✓' : '✗'}
+                </div>
+                <h3 className={`arcade-h3 mb-4 ${isCorrect ? 'arcade-text-green' : 'arcade-text-red'}`}>
+                  {isCorrect ? 'CORRECT!' : 'INCORRECT!'}
+                </h3>
+                <div className="arcade-card p-4 mb-6">
+                  <div className="arcade-text arcade-text-yellow text-sm mb-2">CORRECT WORD:</div>
+                  <div className="arcade-text arcade-text-cyan text-xl mb-3">{currentWord}</div>
+                  <div className="arcade-text arcade-text-green text-xs">{wordMeaning}</div>
+                </div>
+                <button 
+                  onClick={() => {
+                    setShowResult(false);
+                    generateJumbledWord();
+                  }}
+                  className="arcade-btn arcade-btn-primary"
+                >
+                  NEXT WORD
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Green Word Builder Game */}
+      {currentGame === 'word-builder' && (
+        <div className="max-w-2xl mx-auto">
+          {gameState === 'menu' && (
+            <div className="arcade-dialog p-8 text-center">
+              <div className="text-8xl mb-4">🌱</div>
+              <h2 className="arcade-h2 mb-4">GREEN WORD BUILDER</h2>
+              <p className="arcade-text arcade-text-cyan text-sm mb-6">
+                Fill in the missing letters to complete sustainability words!
+              </p>
+              <button 
+                onClick={() => {
+                  setGameState('playing');
+                  setWordScore(0);
+                  setWordLevel(1);
+                  generateMissingLettersWord();
+                }} 
+                className="arcade-btn arcade-btn-primary px-8"
+              >
+                <Play className="w-4 h-4 inline mr-2" />START GAME
+              </button>
+            </div>
+          )}
+
+          {gameState === 'playing' && (
+            <div className="arcade-dialog p-8">
+              <div className="text-center mb-6">
+                <div className="arcade-text arcade-text-yellow text-sm mb-2">LEVEL {wordLevel} • SCORE: {wordScore}</div>
+                <h3 className="arcade-h2 mb-4">COMPLETE THIS WORD:</h3>
+                <div className="arcade-card p-6 mb-6">
+                  <div className="text-4xl arcade-text arcade-text-cyan tracking-widest font-mono">
+                    {missingLetters.display}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <input
+                  type="text"
+                  value={userAnswer}
+                  onChange={(e) => setUserAnswer(e.target.value.toUpperCase())}
+                  className="arcade-input w-full px-4 py-3 text-center text-xl"
+                  placeholder="TYPE THE COMPLETE WORD"
+                  onKeyPress={(e) => e.key === 'Enter' && checkWordBuilderAnswer()}
+                  autoFocus
+                />
+              </div>
+
+              <div className="flex space-x-4 justify-center">
+                <button 
+                  onClick={checkWordBuilderAnswer}
+                  className="arcade-btn arcade-btn-primary px-6"
+                >
+                  SUBMIT ANSWER
+                </button>
+                <button 
+                  onClick={generateMissingLettersWord}
+                  className="arcade-btn arcade-btn-secondary px-6"
+                >
+                  SKIP WORD
+                </button>
+                <button 
+                  onClick={() => { setCurrentGame('menu'); setGameState('menu'); }}
+                  className="arcade-btn arcade-btn-red px-6"
+                >
+                  QUIT
+                </button>
+              </div>
+            </div>
+          )}
+
+          {showResult && (
+            <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+              <div className="arcade-dialog p-8 max-w-md w-full mx-4 text-center">
+                <div className={`text-6xl mb-4 ${isCorrect ? 'text-green-400' : 'text-red-400'}`}>
+                  {isCorrect ? '✓' : '✗'}
+                </div>
+                <h3 className={`arcade-h3 mb-4 ${isCorrect ? 'arcade-text-green' : 'arcade-text-red'}`}>
+                  {isCorrect ? 'CORRECT!' : 'INCORRECT!'}
+                </h3>
+                <div className="arcade-card p-4 mb-6">
+                  <div className="arcade-text arcade-text-yellow text-sm mb-2">CORRECT WORD:</div>
+                  <div className="arcade-text arcade-text-cyan text-xl mb-3">{currentWord}</div>
+                  <div className="arcade-text arcade-text-green text-xs">{wordMeaning}</div>
+                </div>
+                <button 
+                  onClick={() => {
+                    setShowResult(false);
+                    generateMissingLettersWord();
+                  }}
+                  className="arcade-btn arcade-btn-primary"
+                >
+                  NEXT WORD
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
+
+  // Word Game Functions
+  function generateJumbledWord() {
+    const randomWord = ecoWords[Math.floor(Math.random() * ecoWords.length)];
+    setCurrentWord(randomWord.word);
+    setWordMeaning(randomWord.meaning);
+    setScrambledWord(scrambleWord(randomWord.word));
+    setUserAnswer('');
+  }
+
+  function scrambleWord(word: string): string {
+    const letters = word.split('');
+    for (let i = letters.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [letters[i], letters[j]] = [letters[j], letters[i]];
+    }
+    return letters.join('');
+  }
+
+  function checkJumbleAnswer() {
+    const correct = userAnswer === currentWord;
+    setIsCorrect(correct);
+    setShowResult(true);
+    if (correct) {
+      setWordScore(prev => prev + 10);
+      setWordLevel(prev => prev + 1);
+    }
+  }
+
+  function generateMissingLettersWord() {
+    const randomWord = ecoWords[Math.floor(Math.random() * ecoWords.length)];
+    setCurrentWord(randomWord.word);
+    setWordMeaning(randomWord.meaning);
+    
+    // Create word with missing letters
+    const word = randomWord.word;
+    const numMissing = Math.min(Math.floor(word.length / 3) + 1, 3); // 1-3 missing letters
+    const positions = [];
+    
+    // Select random positions to hide
+    while (positions.length < numMissing) {
+      const pos = Math.floor(Math.random() * word.length);
+      if (!positions.includes(pos)) {
+        positions.push(pos);
+      }
+    }
+    
+    // Create display word with underscores
+    const displayWord = word.split('').map((letter, index) => 
+      positions.includes(index) ? '_' : letter
+    ).join('');
+    
+    setMissingLetters({ word: randomWord.word, display: displayWord });
+    setUserAnswer('');
+  }
+
+  function checkWordBuilderAnswer() {
+    const correct = userAnswer === currentWord;
+    setIsCorrect(correct);
+    setShowResult(true);
+    if (correct) {
+      setWordScore(prev => prev + 10);
+      setWordLevel(prev => prev + 1);
+    }
+  }
 }
