@@ -24,6 +24,7 @@ import StoriesSection from './pages/StoriesSection';
 import EventManagement from './pages/EventManagement';
 import EcoTrivia from './pages/EcoTrivia';
 import EcoGames from './pages/EcoGames';
+import AIChatbot from './pages/AIChatbot';
 
 import Navbar from './components/Navbar';
 import LoadingSpinner from './components/LoadingSpinner';
@@ -197,6 +198,14 @@ function AppRoutes() {
           element={
             <ProtectedRoute role="student">
               <EcoGames />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/chatbot" 
+          element={
+            <ProtectedRoute role="student">
+              <AIChatbot />
             </ProtectedRoute>
           } 
         />

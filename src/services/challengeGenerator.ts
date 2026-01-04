@@ -1,4 +1,7 @@
-import { generateLessonContent } from './geminiApi';
+
+
+const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
+const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
 export interface GeneratedChallenge {
   id: string;
@@ -12,96 +15,73 @@ export interface GeneratedChallenge {
   category: string;
 }
 
-const challengeTemplates = {
-  easy: [
-    'Find and photograph {topic} examples in your area',
-    'Track your daily {topic} usage for one day',
-    'List 3 ways to improve {topic} at home',
-    'Take photos of {topic} alternatives you can use',
-    'Interview one person about {topic} and record their thoughts'
-  ],
-  medium: [
-    'Implement a {topic} improvement for one week and measure results',
-    'Create awareness about {topic} among 5 people and document responses',
-    'Build or demonstrate a simple {topic} solution',
-    'Organize a small {topic} activity with family/friends',
-    'Research and present {topic} solutions for your community'
-  ],
-  hard: [
-    'Lead a group project addressing {topic} in your school/community',
-    'Create and implement a {topic} campaign reaching 20+ people',
-    'Build a working model or prototype related to {topic}',
-    'Organize an event or workshop about {topic}',
-    'Develop a detailed plan for {topic} improvement in your area'
-  ]
-};
-
 export const generateChallengesForLesson = async (lessonTitle: string, lessonId: string): Promise<GeneratedChallenge[]> => {
-  const topic = lessonTitle.toLowerCase();
-  
-  // Generate one easy and one medium/hard challenge
   const difficulties: ('easy' | 'medium' | 'hard')[] = ['easy', Math.random() > 0.7 ? 'hard' : 'medium'];
   const challenges: GeneratedChallenge[] = [];
 
   for (let i = 0; i < 2; i++) {
     const difficulty = difficulties[i];
-    const templates = challengeTemplates[difficulty];
-    const template = templates[Math.floor(Math.random() * templates.length)];
     
     try {
-      const prompt = `Generate a practical eco-challenge for the lesson "${lessonTitle}". 
-      
-      Challenge type: ${difficulty}
-      Template: ${template.replace('{topic}', topic)}
-      
-      Provide:
-      1. A catchy title (max 6 words)
-      2. Brief description (1 sentence)
-      3. Step-by-step instructions (4-6 steps)
-      4. Materials needed (if any)
-      5. Category (lifestyle/education/community/research/action)
-      
-      Make it practical, impactful, and achievable for students aged 12-18.
-      Format as JSON with fields: title, description, instructions (array), materials (array), category`;
+      const response = await fetch(GROQ_API_URL, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${GROQ_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'llama-3.1-8b-instant',
+          messages: [{
+            role: 'user',
+            content: `Generate a ${difficulty} eco-challenge for lesson "${lessonTitle}".
 
-      const response = await generateLessonContent(prompt);
-      
-      // Try to parse JSON response
-      let challengeData;
-      try {
-        const jsonMatch = response.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          challengeData = JSON.parse(jsonMatch[0]);
-        }
-      } catch (parseError) {
-        // Fallback to template-based generation
-        challengeData = generateFallbackChallenge(lessonTitle, difficulty, i + 1);
-      }
-
-      if (!challengeData) {
-        challengeData = generateFallbackChallenge(lessonTitle, difficulty, i + 1);
-      }
-
-      challenges.push({
-        id: `${lessonId}-ch${i + 1}`,
-        title: challengeData.title || `${lessonTitle} Challenge ${i + 1}`,
-        description: challengeData.description || `Complete a ${difficulty} challenge related to ${lessonTitle}`,
-        instructions: Array.isArray(challengeData.instructions) ? challengeData.instructions : [
-          `Research ${topic} in your area`,
-          `Document your findings with photos`,
-          `Implement one improvement`,
-          `Write reflection on experience`
-        ],
-        materials: Array.isArray(challengeData.materials) ? challengeData.materials : ['Camera/Phone', 'Notebook'],
-        difficulty,
-        points: difficulty === 'easy' ? 25 : difficulty === 'medium' ? 45 : 70,
-        proofType: difficulty === 'easy' ? 'photo' : 'multiple',
-        category: challengeData.category || 'action'
+Return ONLY valid JSON:
+{
+  "title": "Challenge title (max 6 words)",
+  "description": "Brief description (1 sentence)",
+  "instructions": ["Step 1", "Step 2", "Step 3", "Step 4"],
+  "materials": ["Material 1", "Material 2"],
+  "category": "action"
+}`
+          }],
+          temperature: 0.7,
+          max_tokens: 500
+        })
       });
+
+      if (response.ok) {
+        const data = await response.json();
+        const content = data.choices?.[0]?.message?.content || '';
+        
+        const jsonMatch = content.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const challengeData = JSON.parse(jsonMatch[0]);
+          
+          challenges.push({
+            id: `${lessonId}-ch${i + 1}`,
+            title: challengeData.title || `${lessonTitle} Challenge ${i + 1}`,
+            description: challengeData.description || `Complete a ${difficulty} challenge related to ${lessonTitle}`,
+            instructions: Array.isArray(challengeData.instructions) ? challengeData.instructions : [
+              `Research ${lessonTitle.toLowerCase()} in your area`,
+              `Document your findings with photos`,
+              `Implement one improvement`,
+              `Write reflection on experience`
+            ],
+            materials: Array.isArray(challengeData.materials) ? challengeData.materials : ['Camera/Phone', 'Notebook'],
+            difficulty,
+            points: difficulty === 'easy' ? 25 : difficulty === 'medium' ? 45 : 70,
+            proofType: difficulty === 'easy' ? 'photo' : 'multiple',
+            category: challengeData.category || 'action'
+          });
+          continue;
+        }
+      }
     } catch (error) {
-      // Fallback challenge
-      challenges.push(generateFallbackChallenge(lessonTitle, difficulty, i + 1));
+      console.error('Groq Challenge Error:', error);
     }
+    
+    // Fallback
+    challenges.push(generateFallbackChallenge(lessonTitle, difficulty, i + 1));
   }
 
   return challenges;

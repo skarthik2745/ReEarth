@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useGame } from '../contexts/GameContext';
-import { Brain, Award, AlertCircle, ArrowRight, Check } from 'lucide-react';
+import { Brain, Award, AlertCircle, ArrowRight, Check, Loader } from 'lucide-react';
+
+const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
+const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
 interface Question {
   id: number;
@@ -18,138 +21,93 @@ export default function EcoTrivia() {
   const [answered, setAnswered] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const questions: Question[] = [
-    {
-      id: 1,
-      question: "Which of the following is a renewable source of energy?",
-      options: ["Coal", "Petroleum", "Solar energy", "Natural gas"],
-      correct: 2
-    },
-    {
-      id: 2,
-      question: "What is the best way to reduce plastic waste?",
-      options: ["Burn it", "Reuse and recycle", "Throw it in a river", "Mix it with soil"],
-      correct: 1
-    },
-    {
-      id: 3,
-      question: "Which gas is mainly responsible for global warming?",
-      options: ["Oxygen", "Nitrogen", "Carbon dioxide", "Helium"],
-      correct: 2
-    },
-    {
-      id: 4,
-      question: "What is the term for planting trees to restore forests?",
-      options: ["Deforestation", "Afforestation", "Mining", "Irrigation"],
-      correct: 1
-    },
-    {
-      id: 5,
-      question: "Which activity saves the most water at home?",
-      options: ["Taking long showers", "Keeping taps open", "Fixing leaks", "Washing cars daily"],
-      correct: 2
-    },
-    {
-      id: 6,
-      question: "Which of these is biodegradable?",
-      options: ["Plastic bottle", "Aluminum can", "Banana peel", "Glass jar"],
-      correct: 2
-    },
-    {
-      id: 7,
-      question: "The 3R principle stands for—",
-      options: ["Reduce, Reuse, Recycle", "Read, Rewrite, Respond", "Remove, Replace, Repair", "Reduce, Relieve, Restore"],
-      correct: 0
-    },
-    {
-      id: 8,
-      question: "Which of these actions helps save electricity?",
-      options: ["Leaving lights ON", "Using LED bulbs", "Running AC with open windows", "Using old appliances"],
-      correct: 1
-    },
-    {
-      id: 9,
-      question: "What is compost made from?",
-      options: ["Plastic waste", "Organic waste", "Metals", "E-waste"],
-      correct: 1
-    },
-    {
-      id: 10,
-      question: "What is the main cause of ocean pollution?",
-      options: ["Stars", "Plastic waste", "Clouds", "Sand"],
-      correct: 1
-    },
-    {
-      id: 11,
-      question: "What do solar panels convert?",
-      options: ["Heat to electricity", "Water to oxygen", "Sunlight to electricity", "Air to energy"],
-      correct: 2
-    },
-    {
-      id: 12,
-      question: "Which of these helps reduce carbon footprint?",
-      options: ["Using public transport", "Burning waste", "Using diesel vehicles", "Buying more plastic items"],
-      correct: 0
-    },
-    {
-      id: 13,
-      question: "What is the best way to dispose of e-waste?",
-      options: ["Throw it in dustbin", "Burn it", "Give to certified recyclers", "Dump in open land"],
-      correct: 2
-    },
-    {
-      id: 14,
-      question: "Which tree is known for high oxygen release?",
-      options: ["Neem", "Palm", "Teak", "Coconut"],
-      correct: 0
-    },
-    {
-      id: 15,
-      question: "What is rainwater harvesting used for?",
-      options: ["Storing rainwater for future use", "Cleaning leaves", "Cooling air", "Producing electricity"],
-      correct: 0
-    },
-    {
-      id: 16,
-      question: "What does 'carbon footprint' mean?",
-      options: ["Footprint made of carbon", "Total greenhouse gases produced by activities", "Foot size", "Amount of diamonds found"],
-      correct: 1
-    },
-    {
-      id: 17,
-      question: "Which habit reduces paper waste?",
-      options: ["Printing everything", "Using both sides of paper", "Throwing books", "Tearing pages"],
-      correct: 1
-    },
-    {
-      id: 18,
-      question: "What is the main benefit of recycling?",
-      options: ["Increases pollution", "Saves natural resources", "Creates more waste", "Wastes energy"],
-      correct: 1
-    },
-    {
-      id: 19,
-      question: "Which ecosystem absorbs CO₂ naturally?",
-      options: ["Deserts", "Forests", "Parking lots", "Roads"],
-      correct: 1
-    },
-    {
-      id: 20,
-      question: "Which of these is an example of sustainable transport?",
-      options: ["Cycling", "Using diesel cars", "Riding alone in big cars", "Using diesel generators"],
-      correct: 0
+  const generateQuestion = async (): Promise<Question> => {
+    setLoading(true);
+    try {
+      const response = await fetch(GROQ_API_URL, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${GROQ_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'llama-3.1-8b-instant',
+          messages: [{
+            role: 'user',
+            content: `Generate 1 environmental sustainability trivia question for students. Topics: renewable energy, climate change, pollution, conservation, recycling, carbon footprint, biodiversity, sustainable living.
+
+Return ONLY valid JSON:
+{
+  "question": "Question about environmental topic?",
+  "options": ["Option A", "Option B", "Option C", "Option D"],
+  "correct": 0
+}`
+          }],
+          temperature: 0.8,
+          max_tokens: 300
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const content = data.choices?.[0]?.message?.content || '';
+        
+        const jsonMatch = content.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const questionData = JSON.parse(jsonMatch[0]);
+          return {
+            id: Date.now(),
+            question: questionData.question,
+            options: questionData.options,
+            correct: questionData.correct
+          };
+        }
+      }
+    } catch (error) {
+      console.error('Groq Trivia Error:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
+    
+    // Fallback question
+    return getFallbackQuestion();
+  };
 
-  const getRandomQuestion = () => {
-    const randomIndex = Math.floor(Math.random() * questions.length);
-    return questions[randomIndex];
+  const getFallbackQuestion = (): Question => {
+    const fallbackQuestions = [
+      {
+        id: 1,
+        question: "Which renewable energy source uses sunlight?",
+        options: ["Wind", "Solar", "Hydro", "Geothermal"],
+        correct: 1
+      },
+      {
+        id: 2,
+        question: "What does the 3R principle stand for?",
+        options: ["Reduce, Reuse, Recycle", "Read, Write, Repeat", "Run, Rest, Relax", "Remove, Replace, Repair"],
+        correct: 0
+      },
+      {
+        id: 3,
+        question: "Which gas is the main cause of global warming?",
+        options: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Hydrogen"],
+        correct: 2
+      }
+    ];
+    
+    return fallbackQuestions[Math.floor(Math.random() * fallbackQuestions.length)];
   };
 
   useEffect(() => {
-    setCurrentQuestion(getRandomQuestion());
+    loadNewQuestion();
   }, []);
+
+  const loadNewQuestion = async () => {
+    const question = await generateQuestion();
+    setCurrentQuestion(question);
+  };
 
   const handleAnswerSelect = (optionIndex: number) => {
     setSelectedAnswer(optionIndex);
@@ -171,16 +129,23 @@ export default function EcoTrivia() {
     }
   };
 
-  const nextQuestion = () => {
-    setCurrentQuestion(getRandomQuestion());
+  const nextQuestion = async () => {
     setSelectedAnswer(null);
     setAnswered(false);
     setShowResult(false);
     setIsCorrect(false);
+    await loadNewQuestion();
   };
 
-  if (!currentQuestion) {
-    return <div className="arcade-dialog p-8 text-center">Loading...</div>;
+  if (!currentQuestion || loading) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="arcade-dialog p-8 text-center">
+          <Loader className="w-8 h-8 animate-spin text-cyan-400 mx-auto mb-4" />
+          <div className="arcade-text arcade-text-cyan">GENERATING ECO QUESTION...</div>
+        </div>
+      </div>
+    );
   }
 
   return (

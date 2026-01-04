@@ -1,6 +1,14 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 
 export default function Footer() {
+  const location = useLocation();
+  
+  // Hide footer on chatbot page
+  if (location.pathname === '/chatbot') {
+    return null;
+  }
+
   return (
     <footer className="bg-black border-t-4 border-white mt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

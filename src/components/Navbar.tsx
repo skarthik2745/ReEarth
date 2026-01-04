@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useGame } from '../contexts/GameContext';
-import { Leaf, Home, Book, Trophy, User, LogOut, GraduationCap, Users, Calendar, Brain, Gamepad2 } from 'lucide-react';
+import { Leaf, Home, Book, Trophy, User, LogOut, GraduationCap, Users, Calendar, Brain, Gamepad2, Bot } from 'lucide-react';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -19,6 +19,7 @@ export default function Navbar() {
     { path: '/events', icon: Calendar, label: 'Events' },
     { path: '/trivia', icon: Brain, label: 'Trivia' },
     { path: '/games', icon: Gamepad2, label: 'Games' },
+    { path: '/chatbot', icon: Bot, label: 'AI Chat' },
     { path: '/forest', icon: Leaf, label: 'Forest' },
     { path: '/calculator', icon: Users, label: 'Calculator' },
     { path: '/forum', icon: Users, label: 'Forum' },
